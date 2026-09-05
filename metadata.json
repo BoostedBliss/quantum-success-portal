@@ -1,0 +1,6 @@
+{
+  "name": "Astraea: macOS Natal Chart & Sacred Geometry Archetypes",
+  "description": "High-fidelity macOS natal chart and sacred geometry platform featuring a 3D-perspective Dodecahedron-Icosahedron Folding Engine driven by planetary-asteroid harmonious aspects, Quantum Timeline Journal, near-Earth asteroid observatory for 200 nearest asteroids, transit schedules, Placidus/Whole houses, and archetypes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
