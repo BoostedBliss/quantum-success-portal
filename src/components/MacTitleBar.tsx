@@ -51,19 +51,22 @@ export const MacTitleBar: React.FC<MacTitleBarProps> = ({
         <div className="flex items-center space-x-2 mr-1">
           <button
             title="Close"
-            className="w-3 h-3 rounded-full bg-[#FF5F56] hover:opacity-80 transition-opacity flex items-center justify-center group"
+            aria-label="Close"
+            className="w-3 h-3 rounded-full bg-[#FF5F56] hover:opacity-80 transition-opacity flex items-center justify-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5F56]"
           >
             <X className="w-2 h-2 text-black/60 opacity-0 group-hover:opacity-100" />
           </button>
           <button
             title="Minimize"
-            className="w-3 h-3 rounded-full bg-[#FFBD2E] hover:opacity-80 transition-opacity flex items-center justify-center group"
+            aria-label="Minimize"
+            className="w-3 h-3 rounded-full bg-[#FFBD2E] hover:opacity-80 transition-opacity flex items-center justify-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFBD2E]"
           >
             <Minus className="w-2 h-2 text-black/60 opacity-0 group-hover:opacity-100" />
           </button>
           <button
             title="Zoom"
-            className="w-3 h-3 rounded-full bg-[#27C93F] hover:opacity-80 transition-opacity flex items-center justify-center group"
+            aria-label="Zoom"
+            className="w-3 h-3 rounded-full bg-[#27C93F] hover:opacity-80 transition-opacity flex items-center justify-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27C93F]"
           >
             <Maximize2 className="w-1.5 h-1.5 text-black/60 opacity-0 group-hover:opacity-100" />
           </button>
@@ -201,8 +204,9 @@ export const MacTitleBar: React.FC<MacTitleBarProps> = ({
         {/* Export SVG / Dossier */}
         <button
           onClick={onOpenExport}
-          className="p-1.5 rounded-md bg-[#1A1A1C] hover:bg-[#222] border border-[#333] text-[#D1D1D1] hover:text-white transition-colors"
+          className="p-1.5 rounded-md bg-[#1A1A1C] hover:bg-[#222] border border-[#333] text-[#D1D1D1] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
           title="Export Natal Chart (SVG, PDF Dossier, JSON)"
+          aria-label="Export Natal Chart (SVG, PDF Dossier, JSON)"
         >
           <Download className="w-3.5 h-3.5" />
         </button>
