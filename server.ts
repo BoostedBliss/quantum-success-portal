@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -35,8 +36,17 @@ async function startServer() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Security Enhancement: Rate Limiting
+  const oracleLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: { error: "Too many requests to the oracle, please try again after 15 minutes." },
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+
   // Optional AI Deep Psychological Synthesis Oracle endpoint
-  app.post("/api/oracle/synthesize", async (req, res) => {
+  app.post("/api/oracle/synthesize", oracleLimiter, async (req, res) => {
     try {
       const { chartSummary, userQuery, focusArea } = req.body;
 
