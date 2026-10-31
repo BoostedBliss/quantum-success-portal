@@ -24,6 +24,7 @@ import {
   SacredGeometryHUD,
   SacredFilterType,
   FoldingMode,
+  calculateDodecaIcosaHarmony,
 } from './SacredGeometryOverlay';
 
 interface NatalWheelProps {
@@ -46,6 +47,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
   showSacredGeometry,
   onSelectPlanet,
 }) => {
+  const harmonyStats = useMemo(() => calculateDodecaIcosaHarmony(chart), [chart]);
   const [selectedPlanetId, setSelectedPlanetId] = useState<PlanetId | null>(null);
   const [hoveredPlanetId, setHoveredPlanetId] = useState<PlanetId | null>(null);
   const [activeOverlay, setActiveOverlay] = useState<'all' | 'patterns' | 'phi' | 'flower'>('all');
@@ -130,6 +132,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
       {/* Interactive Sacred Geometry HUD or standard zoom overlay */}
       {showSacredGeometry ? (
         <SacredGeometryHUD
+          harmonyStats={harmonyStats}
           chart={chart}
           activeFilter={sacredFilter}
           setActiveFilter={setSacredFilter}
@@ -319,6 +322,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
           {/* SACRED GEOMETRY ASTROLOGICAL WEB & DUAL POLYHEDRA OVERLAY */}
           {showSacredGeometry ? (
             <SacredGeometryOverlay
+              harmonyStats={harmonyStats}
               chart={chart}
               showSacredGeometry={showSacredGeometry}
               selectedPlanetId={selectedPlanetId}
