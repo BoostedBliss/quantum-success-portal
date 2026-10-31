@@ -79,6 +79,7 @@ export const OracleModal: React.FC<OracleModalProps> = ({ isOpen, onClose, chart
           </div>
           <button
             onClick={onClose}
+            aria-label="Close Oracle Modal"
             className="p-1 rounded-md text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
