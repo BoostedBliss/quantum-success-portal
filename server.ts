@@ -87,7 +87,7 @@ Tone: Grounded, profound, empathetic, philosophically rich, and empowering. Avoi
     } catch (err: any) {
       console.error("Error generating synthesis:", err);
       return res.status(500).json({
-        error: err?.message || "Failed to generate archetypal synthesis.",
+        error: "Failed to generate archetypal synthesis.",
       });
     }
   });
