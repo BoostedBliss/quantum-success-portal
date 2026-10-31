@@ -46,7 +46,11 @@ export type SacredFilterType =
 
 export type FoldingMode = 'auto' | 'breath' | 'manual';
 
+
+export type HarmonyStats = ReturnType<typeof calculateDodecaIcosaHarmony>;
+
 export interface SacredGeometryOverlayProps {
+  harmonyStats: HarmonyStats;
   chart: FullNatalChart;
   showSacredGeometry: boolean;
   selectedPlanetId: PlanetId | null;
@@ -307,6 +311,7 @@ export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
  * driven by harmonious aspects detected between planetary and asteroid bodies.
  */
 export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
+  harmonyStats,
   chart,
   showSacredGeometry,
   selectedPlanetId,
@@ -354,8 +359,7 @@ export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
   const animFrameRef = useRef<number>();
   const lastTimeRef = useRef<number>(performance.now());
 
-  // Detect harmonious alignments between planetary and asteroid bodies
-  const harmonyStats = useMemo(() => calculateDodecaIcosaHarmony(chart), [chart]);
+  // Detect harmonious alignments between planetary and asteroid bodies (passed from parent)
   const asteroidHarmonics = harmonyStats.asteroidHarmonics;
 
   // Active target fold determined by detected aspect types:
@@ -1113,6 +1117,7 @@ export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
 };
 
 export interface SacredGeometryHUDProps {
+  harmonyStats: HarmonyStats;
   chart: FullNatalChart;
   activeFilter: SacredFilterType;
   setActiveFilter: (f: SacredFilterType) => void;
@@ -1145,6 +1150,7 @@ export interface SacredGeometryHUDProps {
  * Planetary-Asteroid Harmonious Aspect detection, and the 3D-perspective Folding Engine.
  */
 export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
+  harmonyStats,
   chart,
   activeFilter,
   setActiveFilter,
@@ -1173,8 +1179,7 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
   const [showAspectsDrawer, setShowAspectsDrawer] = useState<boolean>(false);
 
-  const stats = useMemo(() => calculateDodecaIcosaHarmony(chart), [chart]);
-  const asteroidHarmonics = stats.asteroidHarmonics;
+  const asteroidHarmonics = harmonyStats.asteroidHarmonics;
 
   return (
     <>
@@ -1211,27 +1216,27 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
             <span className="text-[10px] uppercase tracking-wider text-[#888] font-mono flex items-center gap-1.5">
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  stats.hasHarmoniousResonance ? 'bg-[#D4AF37] animate-pulse' : 'bg-[#38bdf8]'
+                  harmonyStats.hasHarmoniousResonance ? 'bg-[#D4AF37] animate-pulse' : 'bg-[#38bdf8]'
                 }`}
               />
               Harmonious Resonance
             </span>
             <span className="font-mono font-bold text-[#D4AF37] text-xs">
-              {stats.harmonyQuotient}%
+              {harmonyStats.harmonyQuotient}%
             </span>
           </div>
 
           <div className="w-full bg-[#0C0C0E] h-1.5 rounded-full mt-1.5 overflow-hidden border border-[#333]">
             <div
               className="h-full bg-gradient-to-r from-[#38bdf8] via-[#D4AF37] to-[#eab308] transition-all duration-500"
-              style={{ width: `${stats.harmonyQuotient}%` }}
+              style={{ width: `${harmonyStats.harmonyQuotient}%` }}
             />
           </div>
 
           <div className="flex items-center justify-between text-[10px] font-mono text-[#888] mt-1.5 pt-1 border-t border-[#222]">
-            <span>△ {stats.trines} Trines</span>
-            <span>✶ {stats.sextiles} Sext</span>
-            <span>⬠ {stats.quintiles} Quint</span>
+            <span>△ {harmonyStats.trines} Trines</span>
+            <span>✶ {harmonyStats.sextiles} Sext</span>
+            <span>⬠ {harmonyStats.quintiles} Quint</span>
             <span className="text-[#38bdf8] font-semibold">
               ☄ {asteroidHarmonics.totalHarmonies} Ast
             </span>
