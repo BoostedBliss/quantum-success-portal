@@ -1190,15 +1190,17 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
           <div className="flex items-center space-x-1">
             <button
               onClick={() => setShowInfoModal(true)}
-              className="p-1 rounded text-[#888] hover:text-[#D4AF37] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
+              className="p-1 rounded text-[#888] hover:text-[#D4AF37] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
               title="Keplerian Dual Polyhedra & Folding Engine Principles"
+              aria-label="Keplerian Dual Polyhedra & Folding Engine Principles"
             >
               <HelpCircle className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
+              className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
               title={isExpanded ? 'Collapse controls' : 'Expand controls'}
+              aria-label={isExpanded ? 'Collapse controls' : 'Expand controls'}
             >
               {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
@@ -1586,7 +1588,8 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
               </div>
               <button
                 onClick={() => setShowInfoModal(false)}
-                className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
+                aria-label="Close"
+                className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
               >
                 <X className="w-4 h-4" />
               </button>
