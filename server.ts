@@ -5,6 +5,7 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
+import helmet from "helmet";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  app.use(helmet({ contentSecurityPolicy: false }));
   app.use(express.json({ limit: "2mb" }));
 
   // Shared Gemini client helper
@@ -87,7 +89,7 @@ Tone: Grounded, profound, empathetic, philosophically rich, and empowering. Avoi
     } catch (err: any) {
       console.error("Error generating synthesis:", err);
       return res.status(500).json({
-        error: err?.message || "Failed to generate archetypal synthesis.",
+        error: "Failed to generate archetypal synthesis. An unexpected error occurred.",
       });
     }
   });
