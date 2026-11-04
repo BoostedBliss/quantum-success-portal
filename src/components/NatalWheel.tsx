@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   FullNatalChart,
   PlanetId,
@@ -41,7 +41,7 @@ const R_HOUSE_NUMBERS = 330;
 const R_PLANETS = 285;
 const R_ASPECT_HUB = 230;
 
-export const NatalWheel: React.FC<NatalWheelProps> = ({
+export const NatalWheel: React.FC<NatalWheelProps> = React.memo(({
   chart,
   showSacredGeometry,
   onSelectPlanet,
@@ -66,7 +66,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
   const ascDeg = chart.angles.ascendant.longitude;
 
   // Converts ecliptic longitude to SVG (x, y) with Ascendant placed at exactly 9 o'clock (180 deg)
-  const getCoordinates = (longitude: number, radius: number) => {
+  const getCoordinates = useCallback((longitude: number, radius: number) => {
     // Angular difference from Ascendant: positive counter-clockwise
     const angleFromAsc = (longitude - ascDeg + 360) % 360;
     // In SVG: 0 deg is 3 o'clock, 90 is 6 o'clock, 180 is 9 o'clock, 270 is 12 o'clock
@@ -79,7 +79,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
       y: CENTER_Y + radius * Math.sin(svgAngleRad),
       angleDeg: svgAngleDeg,
     };
-  };
+  }, [ascDeg]);
 
   // Prevent planet glyph collisions: cluster dispersion
   const planetCoords = useMemo(() => {
@@ -692,4 +692,4 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
       </div>
     </div>
   );
-};
+});
