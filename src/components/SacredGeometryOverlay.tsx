@@ -306,7 +306,7 @@ export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
  * Renders the 3D-Perspective Folding Engine that morphs between Dodecahedron and Icosahedron wireframes
  * driven by harmonious aspects detected between planetary and asteroid bodies.
  */
-export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
+export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = React.memo(({
   chart,
   showSacredGeometry,
   selectedPlanetId,
@@ -1110,7 +1110,7 @@ export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
       </g>
     </g>
   );
-};
+});
 
 export interface SacredGeometryHUDProps {
   chart: FullNatalChart;
@@ -1144,7 +1144,7 @@ export interface SacredGeometryHUDProps {
  * Interactive floating HUD controls providing complete mastery over the Astrological Web,
  * Planetary-Asteroid Harmonious Aspect detection, and the 3D-perspective Folding Engine.
  */
-export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
+export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = React.memo(({
   chart,
   activeFilter,
   setActiveFilter,
@@ -1661,4 +1661,4 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
       )}
     </>
   );
-};
+});

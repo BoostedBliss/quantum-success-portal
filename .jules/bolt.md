@@ -1,0 +1,3 @@
+## 2026-11-04 - Prevent Heavy SVG Re-renders with React.memo and useCallback
+**Learning:** Complex SVG and 3D folding components (like `SacredGeometryOverlay` and `NatalWheel`) can cause significant main thread blocking if they re-render when a parent component (like `App`) updates its state (e.g. for simple modal toggles). Standard React behavior passes new function references (like `getCoordinates`) down, busting child memoization.
+**Action:** Always pair `React.memo` on heavy visual components with `useCallback` on coordinate-generation or projection functions in parent components to ensure stable props and effectively break the re-render chain.
