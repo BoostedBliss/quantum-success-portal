@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Aspect, AspectType, FullNatalChart, PlanetPosition } from '../types';
 import { PLANET_META } from '../lib/astronomy';
 import { Sparkles, Grid, Filter, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
@@ -12,22 +12,31 @@ export const AspectMatrix: React.FC<AspectMatrixProps> = ({ chart, onSelectPlane
   const [filterNature, setFilterNature] = useState<'all' | 'harmonious' | 'tension' | 'creative'>('all');
   const [selectedAspect, setSelectedAspect] = useState<Aspect | null>(null);
 
-  const mainPlanets = chart.planets.filter(
+  // ⚡ Bolt: Memoize mainPlanets to avoid re-filtering on every render
+  const mainPlanets = useMemo(() => chart.planets.filter(
     (p) => !['Ascendant', 'Midheaven'].includes(p.id)
-  );
+  ), [chart.planets]);
 
-  const filteredAspects = chart.aspects.filter((a) => {
+  // ⚡ Bolt: Memoize filteredAspects to avoid re-filtering on every render
+  const filteredAspects = useMemo(() => chart.aspects.filter((a) => {
     if (filterNature === 'all') return true;
     return a.nature === filterNature;
-  });
+  }), [chart.aspects, filterNature]);
 
-  // Find aspect between two planets
+  // ⚡ Bolt: Create an O(1) lookup map for aspects to replace O(N^2) search in grid render
+  const aspectMap = useMemo(() => {
+    const map = new Map<string, Aspect>();
+    chart.aspects.forEach((a) => {
+      // Store both directions for easier lookup
+      map.set(`${a.planet1}-${a.planet2}`, a);
+      map.set(`${a.planet2}-${a.planet1}`, a);
+    });
+    return map;
+  }, [chart.aspects]);
+
+  // Find aspect between two planets in O(1) time
   const getAspectBetween = (id1: string, id2: string): Aspect | undefined => {
-    return chart.aspects.find(
-      (a) =>
-        (a.planet1 === id1 && a.planet2 === id2) ||
-        (a.planet1 === id2 && a.planet2 === id1)
-    );
+    return aspectMap.get(`${id1}-${id2}`);
   };
 
   const getAspectGlyph = (type: AspectType) => {
