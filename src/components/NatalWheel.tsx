@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   FullNatalChart,
   PlanetId,
@@ -66,7 +66,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
   const ascDeg = chart.angles.ascendant.longitude;
 
   // Converts ecliptic longitude to SVG (x, y) with Ascendant placed at exactly 9 o'clock (180 deg)
-  const getCoordinates = (longitude: number, radius: number) => {
+  const getCoordinates = useCallback((longitude: number, radius: number) => {
     // Angular difference from Ascendant: positive counter-clockwise
     const angleFromAsc = (longitude - ascDeg + 360) % 360;
     // In SVG: 0 deg is 3 o'clock, 90 is 6 o'clock, 180 is 9 o'clock, 270 is 12 o'clock
@@ -79,7 +79,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
       y: CENTER_Y + radius * Math.sin(svgAngleRad),
       angleDeg: svgAngleDeg,
     };
-  };
+  }, [ascDeg]);
 
   // Prevent planet glyph collisions: cluster dispersion
   const planetCoords = useMemo(() => {
@@ -105,7 +105,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
     }
 
     return coordsMap;
-  }, [chart.planets, ascDeg]);
+  }, [chart.planets, ascDeg, getCoordinates]);
 
   // Selected or hovered planet data
   const inspectedPlanet = useMemo(() => {
@@ -118,6 +118,100 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
     if (!inspectedPlanet) return null;
     return JUNGIAN_ARCHETYPES[inspectedPlanet.id];
   }, [inspectedPlanet]);
+
+  // Memoize static zodiac background to prevent heavy re-renders on hover
+  const staticZodiacWheel = useMemo(() => {
+    return (
+      <g id="static-zodiac-wheel">
+        {/* Outer Wheel Container */}
+        <circle cx={CENTER_X} cy={CENTER_Y} r={R_OUTER_FRAME} fill="url(#hubGradient)" stroke="#222222" strokeWidth="2" />
+        <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_OUTER} fill="none" stroke="#222222" strokeWidth="1" />
+        <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_INNER} fill="none" stroke="#222222" strokeWidth="1.5" />
+        <circle cx={CENTER_X} cy={CENTER_Y} r={R_ASPECT_HUB} fill="#08080A" stroke="#222222" strokeWidth="1.5" />
+
+        {/* 12 ZODIAC SECTORS */}
+        {ZODIAC_SIGNS.map((sign, idx) => {
+          const startDeg = idx * 30;
+          const endDeg = (idx + 1) * 30;
+          const midDeg = idx * 30 + 15;
+
+          const p1 = getCoordinates(startDeg, R_ZODIAC_INNER);
+          const p2 = getCoordinates(startDeg, R_ZODIAC_OUTER);
+          const p3 = getCoordinates(endDeg, R_ZODIAC_OUTER);
+          const p4 = getCoordinates(endDeg, R_ZODIAC_INNER);
+
+          const midCoord = getCoordinates(midDeg, (R_ZODIAC_OUTER + R_ZODIAC_INNER) / 2);
+
+          let elementColor = 'rgba(239, 68, 68, 0.15)'; // Fire
+          let elementStroke = '#ef4444';
+          let textColor = '#fca5a5';
+          if (sign.element === 'Earth') {
+            elementColor = 'rgba(16, 185, 129, 0.15)';
+            elementStroke = '#10b981';
+            textColor = '#86efac';
+          } else if (sign.element === 'Air') {
+            elementColor = 'rgba(56, 189, 248, 0.15)';
+            elementStroke = '#38bdf8';
+            textColor = '#7dd3fc';
+          } else if (sign.element === 'Water') {
+            elementColor = 'rgba(129, 140, 248, 0.15)';
+            elementStroke = '#818cf8';
+            textColor = '#c7d2fe';
+          }
+
+          return (
+            <g key={sign.name}>
+              {/* Sector wedge */}
+              <path
+                d={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${R_ZODIAC_OUTER} ${R_ZODIAC_OUTER} 0 0 0 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${R_ZODIAC_INNER} ${R_ZODIAC_INNER} 0 0 1 ${p1.x} ${p1.y} Z`}
+                fill={elementColor}
+                stroke="#1e293b"
+                strokeWidth="0.75"
+              />
+
+              {/* Boundary line */}
+              <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#334155" strokeWidth="1" />
+
+              {/* Zodiac Sign Symbol & Name */}
+              <text
+                x={midCoord.x}
+                y={midCoord.y + 4}
+                textAnchor="middle"
+                fill={textColor}
+                fontSize="18"
+                fontWeight="600"
+                className="font-sans cursor-pointer hover:scale-125 transition-transform"
+              >
+                {sign.symbol}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* 1-DEGREE AND 5-DEGREE TICKS IN ZODIAC BAND */}
+        {Array.from({ length: 72 }).map((_, i) => {
+          const deg = i * 5;
+          const isTen = deg % 10 === 0;
+          const r1 = R_ZODIAC_INNER;
+          const r2 = isTen ? R_ZODIAC_INNER + 9 : R_ZODIAC_INNER + 5;
+          const pStart = getCoordinates(deg, r1);
+          const pEnd = getCoordinates(deg, r2);
+          return (
+            <line
+              key={`tick-${deg}`}
+              x1={pStart.x}
+              y1={pStart.y}
+              x2={pEnd.x}
+              y2={pEnd.y}
+              stroke="#475569"
+              strokeWidth={isTen ? 1.2 : 0.6}
+              opacity={0.7}
+            />
+          );
+        })}
+      </g>
+    );
+  }, [getCoordinates]);
 
   // Handle planet click
   const handlePlanetClick = (p: PlanetPosition) => {
@@ -229,92 +323,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
             </filter>
           </defs>
 
-          {/* Outer Wheel Container */}
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_OUTER_FRAME} fill="url(#hubGradient)" stroke="#222222" strokeWidth="2" />
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_OUTER} fill="none" stroke="#222222" strokeWidth="1" />
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_INNER} fill="none" stroke="#222222" strokeWidth="1.5" />
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_ASPECT_HUB} fill="#08080A" stroke="#222222" strokeWidth="1.5" />
-
-          {/* 12 ZODIAC SECTORS */}
-          {ZODIAC_SIGNS.map((sign, idx) => {
-            const startDeg = idx * 30;
-            const endDeg = (idx + 1) * 30;
-            const midDeg = idx * 30 + 15;
-
-            const p1 = getCoordinates(startDeg, R_ZODIAC_INNER);
-            const p2 = getCoordinates(startDeg, R_ZODIAC_OUTER);
-            const p3 = getCoordinates(endDeg, R_ZODIAC_OUTER);
-            const p4 = getCoordinates(endDeg, R_ZODIAC_INNER);
-
-            const midCoord = getCoordinates(midDeg, (R_ZODIAC_OUTER + R_ZODIAC_INNER) / 2);
-
-            let elementColor = 'rgba(239, 68, 68, 0.15)'; // Fire
-            let elementStroke = '#ef4444';
-            let textColor = '#fca5a5';
-            if (sign.element === 'Earth') {
-              elementColor = 'rgba(16, 185, 129, 0.15)';
-              elementStroke = '#10b981';
-              textColor = '#86efac';
-            } else if (sign.element === 'Air') {
-              elementColor = 'rgba(56, 189, 248, 0.15)';
-              elementStroke = '#38bdf8';
-              textColor = '#7dd3fc';
-            } else if (sign.element === 'Water') {
-              elementColor = 'rgba(129, 140, 248, 0.15)';
-              elementStroke = '#818cf8';
-              textColor = '#c7d2fe';
-            }
-
-            return (
-              <g key={sign.name}>
-                {/* Sector wedge */}
-                <path
-                  d={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${R_ZODIAC_OUTER} ${R_ZODIAC_OUTER} 0 0 0 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${R_ZODIAC_INNER} ${R_ZODIAC_INNER} 0 0 1 ${p1.x} ${p1.y} Z`}
-                  fill={elementColor}
-                  stroke="#1e293b"
-                  strokeWidth="0.75"
-                />
-
-                {/* Boundary line */}
-                <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#334155" strokeWidth="1" />
-
-                {/* Zodiac Sign Symbol & Name */}
-                <text
-                  x={midCoord.x}
-                  y={midCoord.y + 4}
-                  textAnchor="middle"
-                  fill={textColor}
-                  fontSize="18"
-                  fontWeight="600"
-                  className="font-sans cursor-pointer hover:scale-125 transition-transform"
-                >
-                  {sign.symbol}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* 1-DEGREE AND 5-DEGREE TICKS IN ZODIAC BAND */}
-          {Array.from({ length: 72 }).map((_, i) => {
-            const deg = i * 5;
-            const isTen = deg % 10 === 0;
-            const r1 = R_ZODIAC_INNER;
-            const r2 = isTen ? R_ZODIAC_INNER + 9 : R_ZODIAC_INNER + 5;
-            const pStart = getCoordinates(deg, r1);
-            const pEnd = getCoordinates(deg, r2);
-            return (
-              <line
-                key={`tick-${deg}`}
-                x1={pStart.x}
-                y1={pStart.y}
-                x2={pEnd.x}
-                y2={pEnd.y}
-                stroke="#475569"
-                strokeWidth={isTen ? 1.2 : 0.6}
-                opacity={0.7}
-              />
-            );
-          })}
+          {staticZodiacWheel}
 
           {/* SACRED GEOMETRY ASTROLOGICAL WEB & DUAL POLYHEDRA OVERLAY */}
           {showSacredGeometry ? (
