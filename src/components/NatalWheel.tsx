@@ -165,22 +165,25 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
             <div className="flex items-center space-x-1">
               <button
                 onClick={() => setZoomLevel((z) => Math.max(0.7, z - 0.1))}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Zoom out"
+                aria-label="Zoom out"
               >
                 <ZoomOut className="w-3 h-3" />
               </button>
               <button
                 onClick={() => setZoomLevel(1)}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Reset Zoom"
+                aria-label="Reset Zoom"
               >
                 <RotateCcw className="w-3 h-3" />
               </button>
               <button
                 onClick={() => setZoomLevel((z) => Math.min(1.4, z + 0.1))}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Zoom in"
+                aria-label="Zoom in"
               >
                 <ZoomIn className="w-3 h-3" />
               </button>
