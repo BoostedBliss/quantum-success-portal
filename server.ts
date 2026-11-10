@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -15,6 +16,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Security Enhancements
+  app.use(helmet({ contentSecurityPolicy: false })); // Disable CSP to not break Vite during dev
   app.use(express.json({ limit: "2mb" }));
 
   // Shared Gemini client helper
