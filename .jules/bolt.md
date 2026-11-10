@@ -1,0 +1,3 @@
+## 2024-11-10 - Complex SVG Render Thrashing
+**Learning:** Complex static SVG elements (like a Natal Wheel's background, zodiac sectors, and degree markers) will aggressively re-render and cause significant lag during high-frequency user interactions (like hovering over planets) if their coordinate generation functions and React component sub-trees are not memoized.
+**Action:** Always aggressively use `useMemo` for static visual SVG layers and wrap their coordinate generation functions in `useCallback` to maintain stable references, separating them from the component's stateful interaction layer.
