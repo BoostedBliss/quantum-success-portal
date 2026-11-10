@@ -598,6 +598,8 @@ export const QuantumTimelineJournal: React.FC<QuantumTimelineJournalProps> = ({
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
                         className="hover:text-red-400"
+                        aria-label="Remove tag"
+                        title="Remove tag"
                       >
                         <X className="w-2.5 h-2.5" />
                       </button>
