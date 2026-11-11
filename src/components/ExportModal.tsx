@@ -65,8 +65,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, chart
           </div>
           <button
             onClick={onClose}
-            title="Close"
-            aria-label="Close modal"
+            aria-label="Close export modal"
             className="p-1 rounded-md text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
           >
             <X className="w-4 h-4" />
