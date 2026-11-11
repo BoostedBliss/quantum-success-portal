@@ -24,6 +24,7 @@ import {
   SacredGeometryHUD,
   SacredFilterType,
   FoldingMode,
+  calculateDodecaIcosaHarmony,
 } from './SacredGeometryOverlay';
 
 interface NatalWheelProps {
@@ -41,11 +42,12 @@ const R_HOUSE_NUMBERS = 330;
 const R_PLANETS = 285;
 const R_ASPECT_HUB = 230;
 
-export const NatalWheel: React.FC<NatalWheelProps> = ({
+export const NatalWheel: React.FC<NatalWheelProps> = React.memo(({
   chart,
   showSacredGeometry,
   onSelectPlanet,
 }) => {
+  const harmonyStats = useMemo(() => calculateDodecaIcosaHarmony(chart), [chart]);
   const [selectedPlanetId, setSelectedPlanetId] = useState<PlanetId | null>(null);
   const [hoveredPlanetId, setHoveredPlanetId] = useState<PlanetId | null>(null);
   const [activeOverlay, setActiveOverlay] = useState<'all' | 'patterns' | 'phi' | 'flower'>('all');
@@ -224,6 +226,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
       {/* Interactive Sacred Geometry HUD or standard zoom overlay */}
       {showSacredGeometry ? (
         <SacredGeometryHUD
+          harmonyStats={harmonyStats}
           chart={chart}
           activeFilter={sacredFilter}
           setActiveFilter={setSacredFilter}
@@ -259,22 +262,25 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
             <div className="flex items-center space-x-1">
               <button
                 onClick={() => setZoomLevel((z) => Math.max(0.7, z - 0.1))}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Zoom out"
+                aria-label="Zoom out"
               >
                 <ZoomOut className="w-3 h-3" />
               </button>
               <button
                 onClick={() => setZoomLevel(1)}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Reset Zoom"
+                aria-label="Reset Zoom"
               >
                 <RotateCcw className="w-3 h-3" />
               </button>
               <button
                 onClick={() => setZoomLevel((z) => Math.min(1.4, z + 0.1))}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Zoom in"
+                aria-label="Zoom in"
               >
                 <ZoomIn className="w-3 h-3" />
               </button>
@@ -328,6 +334,7 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
           {/* SACRED GEOMETRY ASTROLOGICAL WEB & DUAL POLYHEDRA OVERLAY */}
           {showSacredGeometry ? (
             <SacredGeometryOverlay
+              harmonyStats={harmonyStats}
               chart={chart}
               showSacredGeometry={showSacredGeometry}
               selectedPlanetId={selectedPlanetId}
@@ -385,78 +392,83 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
             </g>
           )}
 
-          {/* HOUSE CUSP LINES & ROMAN NUMERALS */}
-          {chart.houses.map((house, idx) => {
-            const pStart = getCoordinates(house.longitude, R_ASPECT_HUB);
-            const pEnd = getCoordinates(house.longitude, R_ZODIAC_INNER);
+          {/* Bolt: Memoize the house cusps lines and angles badges to prevent re-renders when the selected planet state changes */}
+          {useMemo(() => (
+            <g id="static-house-cusps">
+              {/* HOUSE CUSP LINES & ROMAN NUMERALS */}
+              {chart.houses.map((house, idx) => {
+                const pStart = getCoordinates(house.longitude, R_ASPECT_HUB);
+                const pEnd = getCoordinates(house.longitude, R_ZODIAC_INNER);
 
-            const isAngle = [1, 4, 7, 10].includes(house.house);
-            let strokeColor = isAngle ? '#94a3b8' : '#334155';
-            let strokeWidth = isAngle ? 2.2 : 0.9;
-            let strokeDash: string | undefined = isAngle ? undefined : '3 3';
+                const isAngle = [1, 4, 7, 10].includes(house.house);
+                let strokeColor = isAngle ? '#94a3b8' : '#334155';
+                let strokeWidth = isAngle ? 2.2 : 0.9;
+                let strokeDash: string | undefined = isAngle ? undefined : '3 3';
 
-            if (house.house === 1) strokeColor = '#38bdf8'; // Ascendant
-            if (house.house === 10) strokeColor = '#facc15'; // Midheaven
+                if (house.house === 1) strokeColor = '#38bdf8'; // Ascendant
+                if (house.house === 10) strokeColor = '#facc15'; // Midheaven
 
-            // Midpoint angle for placing house Roman numeral
-            const nextHouse = chart.houses[(idx + 1) % 12];
-            let midLong = (house.longitude + nextHouse.longitude) / 2;
-            if (nextHouse.longitude < house.longitude) midLong += 180;
-            const romanCoord = getCoordinates(midLong, R_HOUSE_NUMBERS);
+                // Midpoint angle for placing house Roman numeral
+                const nextHouse = chart.houses[(idx + 1) % 12];
+                let midLong = (house.longitude + nextHouse.longitude) / 2;
+                if (nextHouse.longitude < house.longitude) midLong += 180;
+                const romanCoord = getCoordinates(midLong, R_HOUSE_NUMBERS);
 
-            const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+                const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 
-            return (
-              <g key={`house-${house.house}`}>
-                <line
-                  x1={pStart.x}
-                  y1={pStart.y}
-                  x2={pEnd.x}
-                  y2={pEnd.y}
-                  stroke={strokeColor}
-                  strokeWidth={strokeWidth}
-                  strokeDasharray={strokeDash}
-                />
-                {/* House Roman Numeral */}
-                <text
-                  x={romanCoord.x}
-                  y={romanCoord.y + 3.5}
-                  textAnchor="middle"
-                  fill={isAngle ? '#e2e8f0' : '#64748b'}
-                  fontSize={isAngle ? '11' : '9.5'}
-                  fontWeight={isAngle ? '700' : '400'}
-                  className="font-mono select-none"
-                >
-                  {romanNumerals[house.house - 1]}
-                </text>
-              </g>
-            );
-          })}
+                return (
+                  <g key={`house-${house.house}`}>
+                    <line
+                      x1={pStart.x}
+                      y1={pStart.y}
+                      x2={pEnd.x}
+                      y2={pEnd.y}
+                      stroke={strokeColor}
+                      strokeWidth={strokeWidth}
+                      strokeDasharray={strokeDash}
+                    />
+                    {/* House Roman Numeral */}
+                    <text
+                      x={romanCoord.x}
+                      y={romanCoord.y + 3.5}
+                      textAnchor="middle"
+                      fill={isAngle ? '#e2e8f0' : '#64748b'}
+                      fontSize={isAngle ? '11' : '9.5'}
+                      fontWeight={isAngle ? '700' : '400'}
+                      className="font-mono select-none"
+                    >
+                      {romanNumerals[house.house - 1]}
+                    </text>
+                  </g>
+                );
+              })}
 
-          {/* ASC / MC / DSC / IC BADGES */}
-          {(() => {
-            const ascCoord = getCoordinates(chart.angles.ascendant.longitude, R_ZODIAC_OUTER + 18);
-            const mcCoord = getCoordinates(chart.angles.midheaven.longitude, R_ZODIAC_OUTER + 18);
-            const dscCoord = getCoordinates(chart.angles.descendant.longitude, R_ZODIAC_OUTER + 18);
-            const icCoord = getCoordinates(chart.angles.imumCoeli.longitude, R_ZODIAC_OUTER + 18);
+              {/* ASC / MC / DSC / IC BADGES */}
+              {(() => {
+                const ascCoord = getCoordinates(chart.angles.ascendant.longitude, R_ZODIAC_OUTER + 18);
+                const mcCoord = getCoordinates(chart.angles.midheaven.longitude, R_ZODIAC_OUTER + 18);
+                const dscCoord = getCoordinates(chart.angles.descendant.longitude, R_ZODIAC_OUTER + 18);
+                const icCoord = getCoordinates(chart.angles.imumCoeli.longitude, R_ZODIAC_OUTER + 18);
 
-            return (
-              <g className="font-mono text-[10px] font-bold">
-                <text x={ascCoord.x} y={ascCoord.y + 3} textAnchor="middle" fill="#38bdf8">
-                  ASC
-                </text>
-                <text x={mcCoord.x} y={mcCoord.y + 3} textAnchor="middle" fill="#facc15">
-                  MC
-                </text>
-                <text x={dscCoord.x} y={dscCoord.y + 3} textAnchor="middle" fill="#94a3b8">
-                  DSC
-                </text>
-                <text x={icCoord.x} y={icCoord.y + 3} textAnchor="middle" fill="#94a3b8">
-                  IC
-                </text>
-              </g>
-            );
-          })()}
+                return (
+                  <g className="font-mono text-[10px] font-bold">
+                    <text x={ascCoord.x} y={ascCoord.y + 3} textAnchor="middle" fill="#38bdf8">
+                      ASC
+                    </text>
+                    <text x={mcCoord.x} y={mcCoord.y + 3} textAnchor="middle" fill="#facc15">
+                      MC
+                    </text>
+                    <text x={dscCoord.x} y={dscCoord.y + 3} textAnchor="middle" fill="#94a3b8">
+                      DSC
+                    </text>
+                    <text x={icCoord.x} y={icCoord.y + 3} textAnchor="middle" fill="#94a3b8">
+                      IC
+                    </text>
+                  </g>
+                );
+              })()}
+            </g>
+          ), [chart.houses, chart.angles, getCoordinates])}
 
           {/* PLANETS GLYPHS & MARKERS */}
           {chart.planets.map((planet) => {
@@ -701,4 +713,4 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
       </div>
     </div>
   );
-};
+});
