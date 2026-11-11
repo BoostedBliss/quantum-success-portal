@@ -232,92 +232,97 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
             </filter>
           </defs>
 
-          {/* Outer Wheel Container */}
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_OUTER_FRAME} fill="url(#hubGradient)" stroke="#222222" strokeWidth="2" />
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_OUTER} fill="none" stroke="#222222" strokeWidth="1" />
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_INNER} fill="none" stroke="#222222" strokeWidth="1.5" />
-          <circle cx={CENTER_X} cy={CENTER_Y} r={R_ASPECT_HUB} fill="#08080A" stroke="#222222" strokeWidth="1.5" />
+          {/* Bolt: Memoize the heavy static background layers (containers, zodiac wedges, degree ticks) so they don't re-render during high-frequency interaction states like hover */}
+          {useMemo(() => (
+            <g id="static-background-layers">
+              {/* Outer Wheel Container */}
+              <circle cx={CENTER_X} cy={CENTER_Y} r={R_OUTER_FRAME} fill="url(#hubGradient)" stroke="#222222" strokeWidth="2" />
+              <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_OUTER} fill="none" stroke="#222222" strokeWidth="1" />
+              <circle cx={CENTER_X} cy={CENTER_Y} r={R_ZODIAC_INNER} fill="none" stroke="#222222" strokeWidth="1.5" />
+              <circle cx={CENTER_X} cy={CENTER_Y} r={R_ASPECT_HUB} fill="#08080A" stroke="#222222" strokeWidth="1.5" />
 
-          {/* 12 ZODIAC SECTORS */}
-          {ZODIAC_SIGNS.map((sign, idx) => {
-            const startDeg = idx * 30;
-            const endDeg = (idx + 1) * 30;
-            const midDeg = idx * 30 + 15;
+              {/* 12 ZODIAC SECTORS */}
+              {ZODIAC_SIGNS.map((sign, idx) => {
+                const startDeg = idx * 30;
+                const endDeg = (idx + 1) * 30;
+                const midDeg = idx * 30 + 15;
 
-            const p1 = getCoordinates(startDeg, R_ZODIAC_INNER);
-            const p2 = getCoordinates(startDeg, R_ZODIAC_OUTER);
-            const p3 = getCoordinates(endDeg, R_ZODIAC_OUTER);
-            const p4 = getCoordinates(endDeg, R_ZODIAC_INNER);
+                const p1 = getCoordinates(startDeg, R_ZODIAC_INNER);
+                const p2 = getCoordinates(startDeg, R_ZODIAC_OUTER);
+                const p3 = getCoordinates(endDeg, R_ZODIAC_OUTER);
+                const p4 = getCoordinates(endDeg, R_ZODIAC_INNER);
 
-            const midCoord = getCoordinates(midDeg, (R_ZODIAC_OUTER + R_ZODIAC_INNER) / 2);
+                const midCoord = getCoordinates(midDeg, (R_ZODIAC_OUTER + R_ZODIAC_INNER) / 2);
 
-            let elementColor = 'rgba(239, 68, 68, 0.15)'; // Fire
-            let elementStroke = '#ef4444';
-            let textColor = '#fca5a5';
-            if (sign.element === 'Earth') {
-              elementColor = 'rgba(16, 185, 129, 0.15)';
-              elementStroke = '#10b981';
-              textColor = '#86efac';
-            } else if (sign.element === 'Air') {
-              elementColor = 'rgba(56, 189, 248, 0.15)';
-              elementStroke = '#38bdf8';
-              textColor = '#7dd3fc';
-            } else if (sign.element === 'Water') {
-              elementColor = 'rgba(129, 140, 248, 0.15)';
-              elementStroke = '#818cf8';
-              textColor = '#c7d2fe';
-            }
+                let elementColor = 'rgba(239, 68, 68, 0.15)'; // Fire
+                let elementStroke = '#ef4444';
+                let textColor = '#fca5a5';
+                if (sign.element === 'Earth') {
+                  elementColor = 'rgba(16, 185, 129, 0.15)';
+                  elementStroke = '#10b981';
+                  textColor = '#86efac';
+                } else if (sign.element === 'Air') {
+                  elementColor = 'rgba(56, 189, 248, 0.15)';
+                  elementStroke = '#38bdf8';
+                  textColor = '#7dd3fc';
+                } else if (sign.element === 'Water') {
+                  elementColor = 'rgba(129, 140, 248, 0.15)';
+                  elementStroke = '#818cf8';
+                  textColor = '#c7d2fe';
+                }
 
-            return (
-              <g key={sign.name}>
-                {/* Sector wedge */}
-                <path
-                  d={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${R_ZODIAC_OUTER} ${R_ZODIAC_OUTER} 0 0 0 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${R_ZODIAC_INNER} ${R_ZODIAC_INNER} 0 0 1 ${p1.x} ${p1.y} Z`}
-                  fill={elementColor}
-                  stroke="#1e293b"
-                  strokeWidth="0.75"
-                />
+                return (
+                  <g key={sign.name}>
+                    {/* Sector wedge */}
+                    <path
+                      d={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${R_ZODIAC_OUTER} ${R_ZODIAC_OUTER} 0 0 0 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${R_ZODIAC_INNER} ${R_ZODIAC_INNER} 0 0 1 ${p1.x} ${p1.y} Z`}
+                      fill={elementColor}
+                      stroke="#1e293b"
+                      strokeWidth="0.75"
+                    />
 
-                {/* Boundary line */}
-                <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#334155" strokeWidth="1" />
+                    {/* Boundary line */}
+                    <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#334155" strokeWidth="1" />
 
-                {/* Zodiac Sign Symbol & Name */}
-                <text
-                  x={midCoord.x}
-                  y={midCoord.y + 4}
-                  textAnchor="middle"
-                  fill={textColor}
-                  fontSize="18"
-                  fontWeight="600"
-                  className="font-sans cursor-pointer hover:scale-125 transition-transform"
-                >
-                  {sign.symbol}
-                </text>
-              </g>
-            );
-          })}
+                    {/* Zodiac Sign Symbol & Name */}
+                    <text
+                      x={midCoord.x}
+                      y={midCoord.y + 4}
+                      textAnchor="middle"
+                      fill={textColor}
+                      fontSize="18"
+                      fontWeight="600"
+                      className="font-sans cursor-pointer hover:scale-125 transition-transform"
+                    >
+                      {sign.symbol}
+                    </text>
+                  </g>
+                );
+              })}
 
-          {/* 1-DEGREE AND 5-DEGREE TICKS IN ZODIAC BAND */}
-          {Array.from({ length: 72 }).map((_, i) => {
-            const deg = i * 5;
-            const isTen = deg % 10 === 0;
-            const r1 = R_ZODIAC_INNER;
-            const r2 = isTen ? R_ZODIAC_INNER + 9 : R_ZODIAC_INNER + 5;
-            const pStart = getCoordinates(deg, r1);
-            const pEnd = getCoordinates(deg, r2);
-            return (
-              <line
-                key={`tick-${deg}`}
-                x1={pStart.x}
-                y1={pStart.y}
-                x2={pEnd.x}
-                y2={pEnd.y}
-                stroke="#475569"
-                strokeWidth={isTen ? 1.2 : 0.6}
-                opacity={0.7}
-              />
-            );
-          })}
+              {/* 1-DEGREE AND 5-DEGREE TICKS IN ZODIAC BAND */}
+              {Array.from({ length: 72 }).map((_, i) => {
+                const deg = i * 5;
+                const isTen = deg % 10 === 0;
+                const r1 = R_ZODIAC_INNER;
+                const r2 = isTen ? R_ZODIAC_INNER + 9 : R_ZODIAC_INNER + 5;
+                const pStart = getCoordinates(deg, r1);
+                const pEnd = getCoordinates(deg, r2);
+                return (
+                  <line
+                    key={`tick-${deg}`}
+                    x1={pStart.x}
+                    y1={pStart.y}
+                    x2={pEnd.x}
+                    y2={pEnd.y}
+                    stroke="#475569"
+                    strokeWidth={isTen ? 1.2 : 0.6}
+                    opacity={0.7}
+                  />
+                );
+              })}
+            </g>
+          ), [getCoordinates])}
 
           {/* SACRED GEOMETRY ASTROLOGICAL WEB & DUAL POLYHEDRA OVERLAY */}
           {showSacredGeometry ? (
@@ -379,78 +384,83 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
             </g>
           )}
 
-          {/* HOUSE CUSP LINES & ROMAN NUMERALS */}
-          {chart.houses.map((house, idx) => {
-            const pStart = getCoordinates(house.longitude, R_ASPECT_HUB);
-            const pEnd = getCoordinates(house.longitude, R_ZODIAC_INNER);
+          {/* Bolt: Memoize the house cusps lines and angles badges to prevent re-renders when the selected planet state changes */}
+          {useMemo(() => (
+            <g id="static-house-cusps">
+              {/* HOUSE CUSP LINES & ROMAN NUMERALS */}
+              {chart.houses.map((house, idx) => {
+                const pStart = getCoordinates(house.longitude, R_ASPECT_HUB);
+                const pEnd = getCoordinates(house.longitude, R_ZODIAC_INNER);
 
-            const isAngle = [1, 4, 7, 10].includes(house.house);
-            let strokeColor = isAngle ? '#94a3b8' : '#334155';
-            let strokeWidth = isAngle ? 2.2 : 0.9;
-            let strokeDash: string | undefined = isAngle ? undefined : '3 3';
+                const isAngle = [1, 4, 7, 10].includes(house.house);
+                let strokeColor = isAngle ? '#94a3b8' : '#334155';
+                let strokeWidth = isAngle ? 2.2 : 0.9;
+                let strokeDash: string | undefined = isAngle ? undefined : '3 3';
 
-            if (house.house === 1) strokeColor = '#38bdf8'; // Ascendant
-            if (house.house === 10) strokeColor = '#facc15'; // Midheaven
+                if (house.house === 1) strokeColor = '#38bdf8'; // Ascendant
+                if (house.house === 10) strokeColor = '#facc15'; // Midheaven
 
-            // Midpoint angle for placing house Roman numeral
-            const nextHouse = chart.houses[(idx + 1) % 12];
-            let midLong = (house.longitude + nextHouse.longitude) / 2;
-            if (nextHouse.longitude < house.longitude) midLong += 180;
-            const romanCoord = getCoordinates(midLong, R_HOUSE_NUMBERS);
+                // Midpoint angle for placing house Roman numeral
+                const nextHouse = chart.houses[(idx + 1) % 12];
+                let midLong = (house.longitude + nextHouse.longitude) / 2;
+                if (nextHouse.longitude < house.longitude) midLong += 180;
+                const romanCoord = getCoordinates(midLong, R_HOUSE_NUMBERS);
 
-            const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+                const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 
-            return (
-              <g key={`house-${house.house}`}>
-                <line
-                  x1={pStart.x}
-                  y1={pStart.y}
-                  x2={pEnd.x}
-                  y2={pEnd.y}
-                  stroke={strokeColor}
-                  strokeWidth={strokeWidth}
-                  strokeDasharray={strokeDash}
-                />
-                {/* House Roman Numeral */}
-                <text
-                  x={romanCoord.x}
-                  y={romanCoord.y + 3.5}
-                  textAnchor="middle"
-                  fill={isAngle ? '#e2e8f0' : '#64748b'}
-                  fontSize={isAngle ? '11' : '9.5'}
-                  fontWeight={isAngle ? '700' : '400'}
-                  className="font-mono select-none"
-                >
-                  {romanNumerals[house.house - 1]}
-                </text>
-              </g>
-            );
-          })}
+                return (
+                  <g key={`house-${house.house}`}>
+                    <line
+                      x1={pStart.x}
+                      y1={pStart.y}
+                      x2={pEnd.x}
+                      y2={pEnd.y}
+                      stroke={strokeColor}
+                      strokeWidth={strokeWidth}
+                      strokeDasharray={strokeDash}
+                    />
+                    {/* House Roman Numeral */}
+                    <text
+                      x={romanCoord.x}
+                      y={romanCoord.y + 3.5}
+                      textAnchor="middle"
+                      fill={isAngle ? '#e2e8f0' : '#64748b'}
+                      fontSize={isAngle ? '11' : '9.5'}
+                      fontWeight={isAngle ? '700' : '400'}
+                      className="font-mono select-none"
+                    >
+                      {romanNumerals[house.house - 1]}
+                    </text>
+                  </g>
+                );
+              })}
 
-          {/* ASC / MC / DSC / IC BADGES */}
-          {(() => {
-            const ascCoord = getCoordinates(chart.angles.ascendant.longitude, R_ZODIAC_OUTER + 18);
-            const mcCoord = getCoordinates(chart.angles.midheaven.longitude, R_ZODIAC_OUTER + 18);
-            const dscCoord = getCoordinates(chart.angles.descendant.longitude, R_ZODIAC_OUTER + 18);
-            const icCoord = getCoordinates(chart.angles.imumCoeli.longitude, R_ZODIAC_OUTER + 18);
+              {/* ASC / MC / DSC / IC BADGES */}
+              {(() => {
+                const ascCoord = getCoordinates(chart.angles.ascendant.longitude, R_ZODIAC_OUTER + 18);
+                const mcCoord = getCoordinates(chart.angles.midheaven.longitude, R_ZODIAC_OUTER + 18);
+                const dscCoord = getCoordinates(chart.angles.descendant.longitude, R_ZODIAC_OUTER + 18);
+                const icCoord = getCoordinates(chart.angles.imumCoeli.longitude, R_ZODIAC_OUTER + 18);
 
-            return (
-              <g className="font-mono text-[10px] font-bold">
-                <text x={ascCoord.x} y={ascCoord.y + 3} textAnchor="middle" fill="#38bdf8">
-                  ASC
-                </text>
-                <text x={mcCoord.x} y={mcCoord.y + 3} textAnchor="middle" fill="#facc15">
-                  MC
-                </text>
-                <text x={dscCoord.x} y={dscCoord.y + 3} textAnchor="middle" fill="#94a3b8">
-                  DSC
-                </text>
-                <text x={icCoord.x} y={icCoord.y + 3} textAnchor="middle" fill="#94a3b8">
-                  IC
-                </text>
-              </g>
-            );
-          })()}
+                return (
+                  <g className="font-mono text-[10px] font-bold">
+                    <text x={ascCoord.x} y={ascCoord.y + 3} textAnchor="middle" fill="#38bdf8">
+                      ASC
+                    </text>
+                    <text x={mcCoord.x} y={mcCoord.y + 3} textAnchor="middle" fill="#facc15">
+                      MC
+                    </text>
+                    <text x={dscCoord.x} y={dscCoord.y + 3} textAnchor="middle" fill="#94a3b8">
+                      DSC
+                    </text>
+                    <text x={icCoord.x} y={icCoord.y + 3} textAnchor="middle" fill="#94a3b8">
+                      IC
+                    </text>
+                  </g>
+                );
+              })()}
+            </g>
+          ), [chart.houses, chart.angles, getCoordinates])}
 
           {/* PLANETS GLYPHS & MARKERS */}
           {chart.planets.map((planet) => {
