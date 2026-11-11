@@ -1,10 +1,13 @@
 import express from "express";
+import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import dotenv from "dotenv";
+import helmet from "helmet";
 
 dotenv.config();
 
@@ -15,8 +18,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Security Enhancement: Hide Express technology stack
-  app.disable("x-powered-by");
+  // Add security headers, but disable CSP to allow Vite in dev mode
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   app.use(express.json({ limit: "2mb" }));
 
