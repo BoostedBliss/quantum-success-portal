@@ -6,6 +6,7 @@ import { GoogleGenAI } from "@google/genai";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import helmet from "helmet";
 
 dotenv.config();
 
@@ -16,10 +17,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Security Enhancement: Add Helmet for security headers
-  app.use(helmet({
-    contentSecurityPolicy: false, // Disabled for dev/Vite compatibility
-  }));
+  app.use(helmet({ contentSecurityPolicy: false }));
   app.use(express.json({ limit: "2mb" }));
 
   // Shared Gemini client helper
@@ -102,7 +100,7 @@ Tone: Grounded, profound, empathetic, philosophically rich, and empowering. Avoi
       console.error("Error generating synthesis:", err);
       // Security Enhancement: Do not leak internal error message
       return res.status(500).json({
-        error: "Failed to generate archetypal synthesis. Please try again later.",
+        error: "Failed to generate archetypal synthesis. An unexpected error occurred.",
       });
     }
   });
