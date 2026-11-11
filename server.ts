@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
@@ -17,8 +18,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Security Enhancement: Add security headers using Helmet
-  // Configured with contentSecurityPolicy: false to avoid breaking Vite's dev environment
+  // Add security headers, but disable CSP to allow Vite in dev mode
   app.use(helmet({ contentSecurityPolicy: false }));
 
   app.use(express.json({ limit: "2mb" }));
