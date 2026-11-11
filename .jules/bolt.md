@@ -1,3 +1,3 @@
-## 2024-11-10 - Render Thrashing in Complex SVG Components
-**Learning:** In complex SVG components like NatalWheel with many nested elements and frequent state updates (e.g., hovering), inline functions passed down as props or used in render cycles (like coordinate generators) can cause severe render thrashing.
-**Action:** Aggressively memoize static visual layers with `useMemo` and coordinate generation functions with `useCallback` to maintain stable references and prevent unnecessary re-renders.
+## 2024-05-18 - [Sacred Geometry Duplicate Harmony Calculation]
+**Learning:** `calculateDodecaIcosaHarmony` was being called twice per render inside `SacredGeometryOverlay.tsx`, once in the main overlay and once in its nested HUD component. The calculation includes an iteration over planetary aspects which is inefficient to duplicate.
+**Action:** Lift the computation to the parent component (`NatalWheel.tsx`) and pass the pre-computed state to the child components to halve the time taken for this heavy calculation.
