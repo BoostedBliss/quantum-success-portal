@@ -17,7 +17,9 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Security Enhancement: Helmet
   app.use(helmet({ contentSecurityPolicy: false }));
+
   app.use(express.json({ limit: "2mb" }));
 
   // Shared Gemini client helper
@@ -100,7 +102,7 @@ Tone: Grounded, profound, empathetic, philosophically rich, and empowering. Avoi
       console.error("Error generating synthesis:", err);
       // Security Enhancement: Do not leak internal error message
       return res.status(500).json({
-        error: "Failed to generate archetypal synthesis. An unexpected error occurred.",
+        error: "Failed to generate archetypal synthesis. An internal error occurred.",
       });
     }
   });
