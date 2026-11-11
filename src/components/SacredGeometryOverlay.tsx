@@ -1601,7 +1601,6 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = React.memo(({
               </div>
               <button
                 onClick={() => setShowInfoModal(false)}
-                title="Close"
                 aria-label="Close modal"
                 className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
               >
