@@ -170,7 +170,8 @@ export const AsteroidObservatory: React.FC = () => {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-xs text-[#888] hover:text-white absolute right-3 top-2"
+                  aria-label="Clear search"
+                  className="text-xs text-[#888] hover:text-white absolute right-3 top-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] rounded"
                 >
                   ✕
                 </button>
