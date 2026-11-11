@@ -34,12 +34,12 @@ export const OracleModal: React.FC<OracleModalProps> = ({ isOpen, onClose, chart
     setResponse(null);
 
     try {
-      const res = await fetch('/api/gemini/oracle', {
+      const res = await fetch('/api/oracle/synthesize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          chart,
-          question: promptToSend,
+          chartSummary: chart,
+          userQuery: promptToSend,
         }),
       });
 
@@ -79,7 +79,9 @@ export const OracleModal: React.FC<OracleModalProps> = ({ isOpen, onClose, chart
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
+            title="Close"
+            aria-label="Close modal"
+            className="p-1 rounded-md text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
           >
             <X className="w-4 h-4" />
           </button>
