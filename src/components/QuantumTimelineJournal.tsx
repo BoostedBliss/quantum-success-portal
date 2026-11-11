@@ -597,6 +597,7 @@ export const QuantumTimelineJournal: React.FC<QuantumTimelineJournalProps> = ({
                       <button
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
+                      aria-label="Remove tag"
                         className="hover:text-red-400"
                         aria-label="Remove tag"
                         title="Remove tag"
@@ -764,6 +765,7 @@ export const QuantumTimelineJournal: React.FC<QuantumTimelineJournalProps> = ({
 
                     <button
                       onClick={() => handleDeleteEntry(entry.id)}
+                      aria-label="Delete entry"
                       className="p-1 text-[#666] hover:text-red-400 transition-all rounded hover:bg-[#1F1F24]"
                       title="Delete entry"
                     >

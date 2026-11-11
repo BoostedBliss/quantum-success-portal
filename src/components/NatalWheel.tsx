@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   FullNatalChart,
   PlanetId,
@@ -66,20 +66,23 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
   const ascDeg = chart.angles.ascendant.longitude;
 
   // Converts ecliptic longitude to SVG (x, y) with Ascendant placed at exactly 9 o'clock (180 deg)
-  const getCoordinates = (longitude: number, radius: number) => {
-    // Angular difference from Ascendant: positive counter-clockwise
-    const angleFromAsc = (longitude - ascDeg + 360) % 360;
-    // In SVG: 0 deg is 3 o'clock, 90 is 6 o'clock, 180 is 9 o'clock, 270 is 12 o'clock
-    // We want ASC (angleFromAsc = 0) to be at 9 o'clock (180 deg)
-    // As longitude increases, we move counter-clockwise (angle decreasing in SVG coordinate system)
-    const svgAngleDeg = 180 - angleFromAsc;
-    const svgAngleRad = (svgAngleDeg * Math.PI) / 180;
-    return {
-      x: CENTER_X + radius * Math.cos(svgAngleRad),
-      y: CENTER_Y + radius * Math.sin(svgAngleRad),
-      angleDeg: svgAngleDeg,
-    };
-  };
+  const getCoordinates = useCallback(
+    (longitude: number, radius: number) => {
+      // Angular difference from Ascendant: positive counter-clockwise
+      const angleFromAsc = (longitude - ascDeg + 360) % 360;
+      // In SVG: 0 deg is 3 o'clock, 90 is 6 o'clock, 180 is 9 o'clock, 270 is 12 o'clock
+      // We want ASC (angleFromAsc = 0) to be at 9 o'clock (180 deg)
+      // As longitude increases, we move counter-clockwise (angle decreasing in SVG coordinate system)
+      const svgAngleDeg = 180 - angleFromAsc;
+      const svgAngleRad = (svgAngleDeg * Math.PI) / 180;
+      return {
+        x: CENTER_X + radius * Math.cos(svgAngleRad),
+        y: CENTER_Y + radius * Math.sin(svgAngleRad),
+        angleDeg: svgAngleDeg,
+      };
+    },
+    [ascDeg]
+  );
 
   // Prevent planet glyph collisions: cluster dispersion
   const planetCoords = useMemo(() => {
@@ -165,22 +168,25 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
             <div className="flex items-center space-x-1">
               <button
                 onClick={() => setZoomLevel((z) => Math.max(0.7, z - 0.1))}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Zoom out"
+                aria-label="Zoom out"
               >
                 <ZoomOut className="w-3 h-3" />
               </button>
               <button
                 onClick={() => setZoomLevel(1)}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Reset Zoom"
+                aria-label="Reset Zoom"
               >
                 <RotateCcw className="w-3 h-3" />
               </button>
               <button
                 onClick={() => setZoomLevel((z) => Math.min(1.4, z + 0.1))}
-                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1]"
+                className="p-1 hover:bg-[#1A1A1C] rounded text-[#888] hover:text-[#D1D1D1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                 title="Zoom in"
+                aria-label="Zoom in"
               >
                 <ZoomIn className="w-3 h-3" />
               </button>

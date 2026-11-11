@@ -78,6 +78,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Close modal"
             className="p-1 rounded-md text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors"
             aria-label="Close"
             title="Close"
@@ -331,6 +332,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                     <button
                       type="button"
                       onClick={() => onDeleteProfile(prof.id)}
+                      aria-label="Delete profile"
                       className="p-1 text-[#666] hover:text-[#ef4444] transition-colors cursor-pointer"
                       title="Delete profile"
                     >
