@@ -83,7 +83,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, chart
             {/* Download Vector SVG */}
             <button
               onClick={handleDownloadSVG}
-              className="w-full p-3.5 rounded-xl bg-[#151517] hover:bg-[#1A1A1C] border border-[#222] hover:border-[#D4AF37]/50 transition-all text-left flex items-center justify-between group cursor-pointer"
+              aria-label="Download Vector Natal Chart Wheel"
+              className="w-full p-3.5 rounded-xl bg-[#151517] hover:bg-[#1A1A1C] border border-[#222] hover:border-[#D4AF37]/50 transition-all text-left flex items-center justify-between group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
             >
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-lg bg-[#0C0C0E] border border-[#333] flex items-center justify-center text-[#D4AF37]">
@@ -104,7 +105,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, chart
             {/* Download JSON Blueprint */}
             <button
               onClick={handleDownloadJSON}
-              className="w-full p-3.5 rounded-xl bg-[#151517] hover:bg-[#1A1A1C] border border-[#222] hover:border-[#D4AF37]/50 transition-all text-left flex items-center justify-between group cursor-pointer"
+              aria-label="Download Complete Chart Blueprint"
+              className="w-full p-3.5 rounded-xl bg-[#151517] hover:bg-[#1A1A1C] border border-[#222] hover:border-[#D4AF37]/50 transition-all text-left flex items-center justify-between group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
             >
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-lg bg-[#0C0C0E] border border-[#333] flex items-center justify-center text-[#D4AF37]">
@@ -125,7 +127,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, chart
             {/* Print / Save PDF */}
             <button
               onClick={handlePrintDossier}
-              className="w-full p-3.5 rounded-xl bg-[#151517] hover:bg-[#1A1A1C] border border-[#222] hover:border-[#D4AF37]/50 transition-all text-left flex items-center justify-between group cursor-pointer"
+              aria-label="Print or Save to PDF"
+              className="w-full p-3.5 rounded-xl bg-[#151517] hover:bg-[#1A1A1C] border border-[#222] hover:border-[#D4AF37]/50 transition-all text-left flex items-center justify-between group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
             >
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-lg bg-[#0C0C0E] border border-[#333] flex items-center justify-center text-[#D4AF37]">
