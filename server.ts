@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import helmet from "helmet";
 
@@ -54,6 +55,15 @@ async function startServer() {
     try {
       const { chartSummary, userQuery, focusArea } = req.body;
 
+      // Security Enhancement: Input validation
+      if (userQuery && (typeof userQuery !== 'string' || userQuery.length > 1000)) {
+        return res.status(400).json({ error: "Invalid user query format or length." });
+      }
+
+      if (focusArea && (typeof focusArea !== 'string' || focusArea.length > 100)) {
+        return res.status(400).json({ error: "Invalid focus area format or length." });
+      }
+
       const ai = getGeminiClient();
       if (!ai) {
         return res.status(503).json({
@@ -90,6 +100,7 @@ Tone: Grounded, profound, empathetic, philosophically rich, and empowering. Avoi
       });
     } catch (err: any) {
       console.error("Error generating synthesis:", err);
+      // Security Enhancement: Do not leak internal error message
       return res.status(500).json({
         error: "Failed to generate archetypal synthesis. An internal error occurred.",
       });
