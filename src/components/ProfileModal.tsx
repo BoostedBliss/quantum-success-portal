@@ -78,8 +78,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors focus-visible:ring-2"
+            title="Close"
             aria-label="Close modal"
+            className="p-1 rounded-md text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
           >
             <X className="w-4 h-4" />
           </button>
