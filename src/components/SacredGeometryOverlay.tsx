@@ -255,8 +255,15 @@ export function rotate3D(
   return [x3, y3, z2];
 }
 
+// Cache for calculateDodecaIcosaHarmony to avoid duplicate expensive calculations per chart
+const harmonyCache = new WeakMap<FullNatalChart, any>();
+
 // Helper to compute holistic harmony statistics combining natal aspects & planetary-asteroid alignments
 export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
+  if (harmonyCache.has(chart)) {
+    return harmonyCache.get(chart);
+  }
+
   const asteroidHarmonics = detectPlanetaryAsteroidHarmonics(chart);
   const trines = chart.aspects.filter((a) => a.type === 'Trine');
   const sextiles = chart.aspects.filter((a) => a.type === 'Sextile');
@@ -287,7 +294,7 @@ export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
     grandTrines.length > 0 ||
     asteroidHarmonics.hasHarmoniousAspects;
 
-  return {
+  const result = {
     trines: trines.length,
     sextiles: sextiles.length,
     quintiles: quintiles.length,
@@ -303,6 +310,9 @@ export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
     hasHarmoniousResonance,
     asteroidHarmonics,
   };
+
+  harmonyCache.set(chart, result);
+  return result;
 }
 
 /**
