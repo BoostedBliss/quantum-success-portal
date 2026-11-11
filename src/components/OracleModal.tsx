@@ -34,12 +34,12 @@ export const OracleModal: React.FC<OracleModalProps> = ({ isOpen, onClose, chart
     setResponse(null);
 
     try {
-      const res = await fetch('/api/gemini/oracle', {
+      const res = await fetch('/api/oracle/synthesize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          chart,
-          question: promptToSend,
+          chartSummary: chart,
+          userQuery: promptToSend,
         }),
       });
 

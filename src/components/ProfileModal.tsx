@@ -330,6 +330,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                     <button
                       type="button"
                       onClick={() => onDeleteProfile(prof.id)}
+                      aria-label="Delete profile"
                       className="p-1 text-[#666] hover:text-[#ef4444] transition-colors cursor-pointer"
                       title="Delete profile"
                     >
