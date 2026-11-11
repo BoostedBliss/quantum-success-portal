@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Aspect, AspectType, FullNatalChart, PlanetPosition } from '../types';
 import { PLANET_META } from '../lib/astronomy';
 import { Sparkles, Grid, Filter, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
@@ -12,23 +12,34 @@ export const AspectMatrix: React.FC<AspectMatrixProps> = ({ chart, onSelectPlane
   const [filterNature, setFilterNature] = useState<'all' | 'harmonious' | 'tension' | 'creative'>('all');
   const [selectedAspect, setSelectedAspect] = useState<Aspect | null>(null);
 
-  const mainPlanets = chart.planets.filter(
-    (p) => !['Ascendant', 'Midheaven'].includes(p.id)
-  );
+  const mainPlanets = useMemo(() => {
+    return chart.planets.filter(
+      (p) => !['Ascendant', 'Midheaven'].includes(p.id)
+    );
+  }, [chart.planets]);
 
-  const filteredAspects = chart.aspects.filter((a) => {
-    if (filterNature === 'all') return true;
-    return a.nature === filterNature;
-  });
+  const filteredAspects = useMemo(() => {
+    return chart.aspects.filter((a) => {
+      if (filterNature === 'all') return true;
+      return a.nature === filterNature;
+    });
+  }, [chart.aspects, filterNature]);
+
+  const aspectMap = useMemo(() => {
+    const map = new Map<string, Aspect>();
+    for (const a of chart.aspects) {
+      const key1 = `${a.planet1}-${a.planet2}`;
+      const key2 = `${a.planet2}-${a.planet1}`;
+      map.set(key1, a);
+      map.set(key2, a);
+    }
+    return map;
+  }, [chart.aspects]);
 
   // Find aspect between two planets
-  const getAspectBetween = (id1: string, id2: string): Aspect | undefined => {
-    return chart.aspects.find(
-      (a) =>
-        (a.planet1 === id1 && a.planet2 === id2) ||
-        (a.planet1 === id2 && a.planet2 === id1)
-    );
-  };
+  const getAspectBetween = useCallback((id1: string, id2: string): Aspect | undefined => {
+    return aspectMap.get(`${id1}-${id2}`);
+  }, [aspectMap]);
 
   const getAspectGlyph = (type: AspectType) => {
     switch (type) {
