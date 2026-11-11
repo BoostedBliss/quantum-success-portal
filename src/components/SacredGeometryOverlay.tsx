@@ -46,7 +46,11 @@ export type SacredFilterType =
 
 export type FoldingMode = 'auto' | 'breath' | 'manual';
 
+
+export type HarmonyStats = ReturnType<typeof calculateDodecaIcosaHarmony>;
+
 export interface SacredGeometryOverlayProps {
+  harmonyStats: HarmonyStats;
   chart: FullNatalChart;
   showSacredGeometry: boolean;
   selectedPlanetId: PlanetId | null;
@@ -251,8 +255,15 @@ export function rotate3D(
   return [x3, y3, z2];
 }
 
+// Cache for calculateDodecaIcosaHarmony to avoid duplicate expensive calculations per chart
+const harmonyCache = new WeakMap<FullNatalChart, any>();
+
 // Helper to compute holistic harmony statistics combining natal aspects & planetary-asteroid alignments
 export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
+  if (harmonyCache.has(chart)) {
+    return harmonyCache.get(chart);
+  }
+
   const asteroidHarmonics = detectPlanetaryAsteroidHarmonics(chart);
   const trines = chart.aspects.filter((a) => a.type === 'Trine');
   const sextiles = chart.aspects.filter((a) => a.type === 'Sextile');
@@ -283,7 +294,7 @@ export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
     grandTrines.length > 0 ||
     asteroidHarmonics.hasHarmoniousAspects;
 
-  return {
+  const result = {
     trines: trines.length,
     sextiles: sextiles.length,
     quintiles: quintiles.length,
@@ -299,6 +310,9 @@ export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
     hasHarmoniousResonance,
     asteroidHarmonics,
   };
+
+  harmonyCache.set(chart, result);
+  return result;
 }
 
 /**
@@ -306,7 +320,7 @@ export function calculateDodecaIcosaHarmony(chart: FullNatalChart) {
  * Renders the 3D-Perspective Folding Engine that morphs between Dodecahedron and Icosahedron wireframes
  * driven by harmonious aspects detected between planetary and asteroid bodies.
  */
-export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
+export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = React.memo(({
   chart,
   showSacredGeometry,
   selectedPlanetId,
@@ -354,8 +368,7 @@ export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
   const animFrameRef = useRef<number>();
   const lastTimeRef = useRef<number>(performance.now());
 
-  // Detect harmonious alignments between planetary and asteroid bodies
-  const harmonyStats = useMemo(() => calculateDodecaIcosaHarmony(chart), [chart]);
+  // Detect harmonious alignments between planetary and asteroid bodies (passed from parent)
   const asteroidHarmonics = harmonyStats.asteroidHarmonics;
 
   // Active target fold determined by detected aspect types:
@@ -1110,9 +1123,10 @@ export const SacredGeometryOverlay: React.FC<SacredGeometryOverlayProps> = ({
       </g>
     </g>
   );
-};
+});
 
 export interface SacredGeometryHUDProps {
+  harmonyStats: HarmonyStats;
   chart: FullNatalChart;
   activeFilter: SacredFilterType;
   setActiveFilter: (f: SacredFilterType) => void;
@@ -1144,7 +1158,7 @@ export interface SacredGeometryHUDProps {
  * Interactive floating HUD controls providing complete mastery over the Astrological Web,
  * Planetary-Asteroid Harmonious Aspect detection, and the 3D-perspective Folding Engine.
  */
-export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
+export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = React.memo(({
   chart,
   activeFilter,
   setActiveFilter,
@@ -1173,8 +1187,7 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
   const [showAspectsDrawer, setShowAspectsDrawer] = useState<boolean>(false);
 
-  const stats = useMemo(() => calculateDodecaIcosaHarmony(chart), [chart]);
-  const asteroidHarmonics = stats.asteroidHarmonics;
+  const asteroidHarmonics = harmonyStats.asteroidHarmonics;
 
   return (
     <>
@@ -1190,15 +1203,17 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
           <div className="flex items-center space-x-1">
             <button
               onClick={() => setShowInfoModal(true)}
-              className="p-1 rounded text-[#888] hover:text-[#D4AF37] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
+              className="p-1 rounded text-[#888] hover:text-[#D4AF37] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
               title="Keplerian Dual Polyhedra & Folding Engine Principles"
+              aria-label="Keplerian Dual Polyhedra & Folding Engine Principles"
             >
               <HelpCircle className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
+              className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
               title={isExpanded ? 'Collapse controls' : 'Expand controls'}
+              aria-label={isExpanded ? 'Collapse controls' : 'Expand controls'}
             >
               {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
@@ -1211,27 +1226,27 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
             <span className="text-[10px] uppercase tracking-wider text-[#888] font-mono flex items-center gap-1.5">
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  stats.hasHarmoniousResonance ? 'bg-[#D4AF37] animate-pulse' : 'bg-[#38bdf8]'
+                  harmonyStats.hasHarmoniousResonance ? 'bg-[#D4AF37] animate-pulse' : 'bg-[#38bdf8]'
                 }`}
               />
               Harmonious Resonance
             </span>
             <span className="font-mono font-bold text-[#D4AF37] text-xs">
-              {stats.harmonyQuotient}%
+              {harmonyStats.harmonyQuotient}%
             </span>
           </div>
 
           <div className="w-full bg-[#0C0C0E] h-1.5 rounded-full mt-1.5 overflow-hidden border border-[#333]">
             <div
               className="h-full bg-gradient-to-r from-[#38bdf8] via-[#D4AF37] to-[#eab308] transition-all duration-500"
-              style={{ width: `${stats.harmonyQuotient}%` }}
+              style={{ width: `${harmonyStats.harmonyQuotient}%` }}
             />
           </div>
 
           <div className="flex items-center justify-between text-[10px] font-mono text-[#888] mt-1.5 pt-1 border-t border-[#222]">
-            <span>△ {stats.trines} Trines</span>
-            <span>✶ {stats.sextiles} Sext</span>
-            <span>⬠ {stats.quintiles} Quint</span>
+            <span>△ {harmonyStats.trines} Trines</span>
+            <span>✶ {harmonyStats.sextiles} Sext</span>
+            <span>⬠ {harmonyStats.quintiles} Quint</span>
             <span className="text-[#38bdf8] font-semibold">
               ☄ {asteroidHarmonics.totalHarmonies} Ast
             </span>
@@ -1662,4 +1677,4 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
       )}
     </>
   );
-};
+});
