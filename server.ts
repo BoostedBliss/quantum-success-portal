@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -15,8 +16,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Security Enhancement: Hide Express technology stack
-  app.disable("x-powered-by");
+  // Security Enhancement: Helmet for basic security headers
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   app.use(express.json({ limit: "2mb" }));
 
@@ -100,7 +101,7 @@ Tone: Grounded, profound, empathetic, philosophically rich, and empowering. Avoi
       console.error("Error generating synthesis:", err);
       // Security Enhancement: Do not leak internal error message
       return res.status(500).json({
-        error: "Failed to generate archetypal synthesis. An internal error occurred.",
+        error: "Failed to generate archetypal synthesis.",
       });
     }
   });

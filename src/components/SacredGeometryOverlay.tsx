@@ -1592,6 +1592,8 @@ export const SacredGeometryHUD: React.FC<SacredGeometryHUDProps> = ({
               <button
                 onClick={() => setShowInfoModal(false)}
                 className="p-1 rounded text-[#888] hover:text-[#D1D1D1] hover:bg-[#1A1A1C] transition-colors cursor-pointer"
+                aria-label="Close"
+                title="Close"
               >
                 <X className="w-4 h-4" />
               </button>
