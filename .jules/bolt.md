@@ -1,3 +1,3 @@
-## 2026-11-09 - Memoizing Coordinate Generation in SVG Components
-**Learning:** The application's complex SVG components require aggressive use of `useCallback` for coordinate generation functions. Otherwise, passing unmemoized functions to child components (like `SacredGeometryOverlay`) causes severe render thrashing during high-frequency interaction states like hovering.
-**Action:** Always wrap coordinate generation functions and other frequently passed-down utility functions in `useCallback` with appropriate dependencies.
+## 2024-05-15 - React SVG Performance with High-Frequency Interactions
+**Learning:** In complex interactive SVGs (like the astrological Natal Wheel), mixing heavy, mathematically-derived static background elements (hundreds of coordinates, arcs, texts) with high-frequency interactive states (e.g., `hoveredPlanetId` causing re-renders on mousemove) creates severe render thrashing. React must diff hundreds of unchanged SVG nodes and re-run trigonometric calculations on every single hover event.
+**Action:** Always identify visually static "layers" or groupings in interactive SVGs and wrap them aggressively in `useMemo`. For coordinate generation functions used inside these memoized blocks, ensure they are wrapped in `useCallback` to maintain referential equality across interactive renders.
