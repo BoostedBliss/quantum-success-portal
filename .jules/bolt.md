@@ -1,3 +1,3 @@
-## 2024-05-18 - [Sacred Geometry Duplicate Harmony Calculation]
-**Learning:** `calculateDodecaIcosaHarmony` was being called twice per render inside `SacredGeometryOverlay.tsx`, once in the main overlay and once in its nested HUD component. The calculation includes an iteration over planetary aspects which is inefficient to duplicate.
-**Action:** Lift the computation to the parent component (`NatalWheel.tsx`) and pass the pre-computed state to the child components to halve the time taken for this heavy calculation.
+## 2024-05-24 - [O(1) Hash Map Optimization for Grid Rendering]
+**Learning:** In a matrix or grid UI where pairwise relationships are looked up frequently (like `AspectMatrix.tsx` checking for aspects between all planets), repeatedly calling `Array.prototype.find()` creates an O(N²) bottleneck during render.
+**Action:** Always pre-compute a lookup table (hash map) with `useMemo` so that grid cell rendering has O(1) access to its relationship data.
