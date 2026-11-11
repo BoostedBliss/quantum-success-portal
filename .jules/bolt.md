@@ -1,3 +1,3 @@
-## 2024-05-18 - Caching duplicate calculations across disconnected components
-**Learning:** `calculateDodecaIcosaHarmony` was doing expensive loops through planets and asteroids (15,000 iterations). Both `SacredGeometryOverlay` and `SacredGeometryHUD` call this function using `useMemo` but because they are separate components in the tree (HUD is separated), the expensive computation ran twice per chart.
-**Action:** Use a module-level `WeakMap` where the key is the (stable) `chart` object to memoize the result of the expensive calculation, cutting the iterations in half while keeping the API clean.
+## 2024-05-15 - [O(1) Map Lookups for Grid Rendering]
+**Learning:** Rendering dense grids (like an aspect matrix) using `Array.find()` for every cell results in O(N^2) complexity where N is the number of cells.
+**Action:** Always convert the data array into a Map / Dictionary beforehand (O(N)) so that cell lookups are O(1), improving render performance, particularly on unmemoized matrix components.
