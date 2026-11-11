@@ -12,29 +12,27 @@ export const AspectMatrix: React.FC<AspectMatrixProps> = ({ chart, onSelectPlane
   const [filterNature, setFilterNature] = useState<'all' | 'harmonious' | 'tension' | 'creative'>('all');
   const [selectedAspect, setSelectedAspect] = useState<Aspect | null>(null);
 
-  // ⚡ Bolt: Memoize mainPlanets to avoid re-filtering on every render
   const mainPlanets = useMemo(() => chart.planets.filter(
     (p) => !['Ascendant', 'Midheaven'].includes(p.id)
   ), [chart.planets]);
 
-  // ⚡ Bolt: Memoize filteredAspects to avoid re-filtering on every render
   const filteredAspects = useMemo(() => chart.aspects.filter((a) => {
     if (filterNature === 'all') return true;
     return a.nature === filterNature;
   }), [chart.aspects, filterNature]);
 
-  // ⚡ Bolt: Create an O(1) lookup map for aspects to replace O(N^2) search in grid render
+  // Create a fast lookup map for aspects
   const aspectMap = useMemo(() => {
     const map = new Map<string, Aspect>();
     chart.aspects.forEach((a) => {
-      // Store both directions for easier lookup
+      // Store both directions for easy lookup O(1)
       map.set(`${a.planet1}-${a.planet2}`, a);
       map.set(`${a.planet2}-${a.planet1}`, a);
     });
     return map;
   }, [chart.aspects]);
 
-  // Find aspect between two planets in O(1) time
+  // Find aspect between two planets O(1) lookup
   const getAspectBetween = (id1: string, id2: string): Aspect | undefined => {
     return aspectMap.get(`${id1}-${id2}`);
   };
