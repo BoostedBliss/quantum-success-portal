@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -14,6 +15,9 @@ const __dirname = path.dirname(__filename);
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Security Enhancement: Helmet for basic security headers
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   app.use(express.json({ limit: "2mb" }));
 
@@ -49,6 +53,15 @@ async function startServer() {
   app.post("/api/oracle/synthesize", oracleLimiter, async (req, res) => {
     try {
       const { chartSummary, userQuery, focusArea } = req.body;
+
+      // Security Enhancement: Input validation
+      if (userQuery && (typeof userQuery !== 'string' || userQuery.length > 1000)) {
+        return res.status(400).json({ error: "Invalid user query format or length." });
+      }
+
+      if (focusArea && (typeof focusArea !== 'string' || focusArea.length > 100)) {
+        return res.status(400).json({ error: "Invalid focus area format or length." });
+      }
 
       const ai = getGeminiClient();
       if (!ai) {
@@ -86,6 +99,7 @@ Tone: Grounded, profound, empathetic, philosophically rich, and empowering. Avoi
       });
     } catch (err: any) {
       console.error("Error generating synthesis:", err);
+      // Security Enhancement: Do not leak internal error message
       return res.status(500).json({
         error: "Failed to generate archetypal synthesis.",
       });
