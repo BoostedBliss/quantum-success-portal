@@ -2,6 +2,6 @@
 **Learning:** Icon-only buttons (like traffic lights in macOS-style title bars, zoom controls, export buttons) are widely used across the application components (`MacTitleBar`, `NatalWheel`, etc). They currently rely solely on the `title` attribute for accessibility and lack explicit `focus-visible` styles, rendering them invisible to keyboard navigators and some screen readers. Custom styles often override native focus outlines.
 **Action:** When working on UI components, ensure that icon-only buttons have an `aria-label` attribute and explicit `focus-visible:outline-none focus-visible:ring-2` styles (or similar focus indicators) to maintain accessibility.
 
-## 2024-11-10 - Modal Close Buttons Missing ARIA Labels
-**Learning:** Found multiple instances where modal close buttons (using `<X />` icons) lacked `aria-label` attributes across different modal components (`ExportModal`, `OracleModal`, `ProfileModal`, `SacredGeometryOverlay`). This is a recurring pattern in the app. While `title` attributes are sometimes present, they are not a complete substitute for explicit `aria-label` attributes for screen readers.
-**Action:** Always ensure icon-only buttons, especially those performing critical actions like closing a modal or removing an item, have an explicit `aria-label` attribute and a `title` attribute for tooltips.
+## 2026-11-02 - Modals Icon Button A11y
+**Learning:** Added `aria-label` and `focus-visible:ring-2` to Close and Delete icon buttons in `ProfileModal`, `OracleModal`, and `ExportModal` to ensure keyboard navigators have a clear focus state and screen readers can identify the buttons.
+**Action:** Always ensure icon-only buttons have an `aria-label` and a visible focus state for better accessibility.
