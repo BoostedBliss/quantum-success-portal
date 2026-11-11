@@ -16,7 +16,9 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Security headers setup, turning off CSP for Vite compatibility
   app.use(helmet({ contentSecurityPolicy: false }));
+
   app.use(express.json({ limit: "2mb" }));
 
   // Shared Gemini client helper
