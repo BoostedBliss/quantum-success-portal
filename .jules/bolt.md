@@ -1,3 +1,3 @@
-## 2024-05-15 - [O(1) Map Lookups for Grid Rendering]
-**Learning:** Rendering dense grids (like an aspect matrix) using `Array.find()` for every cell results in O(N^2) complexity where N is the number of cells.
-**Action:** Always convert the data array into a Map / Dictionary beforehand (O(N)) so that cell lookups are O(1), improving render performance, particularly on unmemoized matrix components.
+## 2026-11-04 - Prevent Heavy SVG Re-renders with React.memo and useCallback
+**Learning:** Complex SVG and 3D folding components (like `SacredGeometryOverlay` and `NatalWheel`) can cause significant main thread blocking if they re-render when a parent component (like `App`) updates its state (e.g. for simple modal toggles). Standard React behavior passes new function references (like `getCoordinates`) down, busting child memoization.
+**Action:** Always pair `React.memo` on heavy visual components with `useCallback` on coordinate-generation or projection functions in parent components to ensure stable props and effectively break the re-render chain.

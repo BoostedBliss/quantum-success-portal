@@ -42,7 +42,7 @@ const R_HOUSE_NUMBERS = 330;
 const R_PLANETS = 285;
 const R_ASPECT_HUB = 230;
 
-export const NatalWheel: React.FC<NatalWheelProps> = ({
+export const NatalWheel: React.FC<NatalWheelProps> = React.memo(({
   chart,
   showSacredGeometry,
   onSelectPlanet,
@@ -709,4 +709,4 @@ export const NatalWheel: React.FC<NatalWheelProps> = ({
       </div>
     </div>
   );
-};
+});
