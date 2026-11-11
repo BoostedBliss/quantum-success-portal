@@ -3,7 +3,7 @@
 **Learning:** `server.ts` exposes a POST endpoint `/api/oracle/synthesize` that calls the Google GenAI API. There is no rate limiting in place. A malicious actor could repeatedly call this endpoint, leading to exhaustion of the `GEMINI_API_KEY` quota, causing a Denial of Service (DoS) for legitimate users and potentially incurring costs.
 **Prevention:** Always implement rate limiting on endpoints that consume external API quotas or perform expensive operations.
 
-## 2024-11-05 - Missing Security Headers
-**Vulnerability:** Missing security headers (X-Frame-Options, X-Content-Type-Options, etc.) and information leakage in API error response.
-**Learning:** Using Helmet is a standard way to add these, but when used with Vite, `contentSecurityPolicy: false` must be set to prevent breaking the development environment. Also, error messages from external APIs must be sanitized.
-**Prevention:** Always use Helmet in Express apps, with appropriate configuration for the frontend tooling, and ensure error handlers return generic messages.
+## 2024-10-24 - Missing Security Headers (Helmet)
+**Vulnerability:** Missing security headers leaving the application vulnerable to basic web attacks (e.g. XSS, clickjacking).
+**Learning:** `server.ts` was not using `helmet` to set secure HTTP response headers. When integrating `helmet` into a Vite dev server, we must disable `contentSecurityPolicy` (`{ contentSecurityPolicy: false }`) so it doesn't block inline scripts/styles needed for Vite's HMR to function correctly.
+**Prevention:** Always use `helmet` for Express applications to ensure baseline security headers are present, keeping dev environment constraints in mind.

@@ -17,9 +17,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Security Enhancement: Helmet
-  app.use(helmet({ contentSecurityPolicy: false }));
-
+  // Security Enhancements
+  app.use(helmet({ contentSecurityPolicy: false })); // Disable CSP to not break Vite during dev
   app.use(express.json({ limit: "2mb" }));
 
   // Shared Gemini client helper
